@@ -1,0 +1,28 @@
+name: deploy-hello-world
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  update-code-on-server:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          sudo su
+          whoami
+          cd /home/ubuntu/my-app 
+          git pull
+          kill -9 $(pgrep node)        
+          npm run start
+          echo "success"
